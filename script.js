@@ -112,6 +112,13 @@ $(document).ready(function () {
         sheet.cell(`B${totalRow}`).value(totalHoursWorked).style({ bold: true });
         sheet.cell(`C${totalRow}`).value((totalBelaggning / employeesData.length).toFixed(2)).style({ bold: true }); // Genomsnittlig beläggning för alla anställda
     
+        // Beräkna antalet tillgängliga timmar för den valda månaden
+        var availableHours = getAvailableHoursForMonth(month);
+        
+        // Visa antalet tillgängliga timmar i Excel-filen
+        sheet.cell(`A${totalRow + 1}`).value("Tillgängliga timmar").style({ bold: true });
+        sheet.cell(`B${totalRow + 1}`).value(availableHours).style({ bold: true });
+    
         // Skapa en data-URL från arbetsboken
         var dataURL = await workbook.outputAsync();
     
@@ -123,7 +130,26 @@ $(document).ready(function () {
         link.click();
         document.body.removeChild(link);
     });
-     
+
+    // En funktion för att beräkna antalet tillgängliga timmar för en viss månad
+    function getAvailableHoursForMonth(month) {
+        // Hämta antalet arbetsdagar för den valda månaden
+        var daysInMonth = getDaysInMonth(month);
+
+        // Beräkna det totala antalet tillgängliga timmar för månaden
+        var availableHours = daysInMonth * 8 * employees.length; // Antag att en arbetsdag är 8 timmar och multiplicera med antalet anställda
+
+        // Beräkna totala arbetade timmar för månaden
+        var totalHoursWorked = 0;
+        employeesData.forEach(function (employee) {
+            totalHoursWorked += parseFloat(employee.hoursWorked);
+        });
+
+        // Beräkna antalet timmar kvar eller överstigit
+        var remainingHours = availableHours - totalHoursWorked;
+
+        return remainingHours;
+    }
 
     // Funktion för att beräkna beläggning
     function calculateBelaggning(hoursWorked, totalHours) {
