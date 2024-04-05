@@ -204,4 +204,28 @@ $(document).ready(function() {
         $('#confirmationMessage').hide(); // Dölj bekräftelsemeddelandet
         $('#downloadExcel').hide();
     });
+    $(document).ready(function() {
+        // Visa lösenordsrutan när användaren klickar på knappen
+        $('#showLoginForm').click(function() {
+            $('#loginForm').show();
+            $('#loginOverlay').show();
+        });
+    
+        // Dölj lösenordsrutan när användaren loggar in
+        $('#submitButton').click(function() {
+            var username = $('#username').val();
+            var password = $('#password').val();
+            // Här kan du lägga till din inloggningslogik för att kontrollera användarnamn och lösenord
+            // Om inloggningen är framgångsrik, dölj lösenordsrutan och visa innehållet
+            if (username === 'admin' && password === 'password') {
+                $('#loginForm').hide();
+                $('#loginOverlay').hide();
+                $('#content').show();
+            } else {
+                // Visa ett meddelande om inloggningen misslyckas
+                alert('Fel användarnamn eller lösenord. Försök igen.');
+            }
+        });
+    });
+    
 });

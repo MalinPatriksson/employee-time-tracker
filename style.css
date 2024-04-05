@@ -1,0 +1,46 @@
+/* Overlay-stilen för bakgrundsskugga */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Justera genomskinligheten efter behov */
+    backdrop-filter: blur(5px); /* Bakgrundsskugga */
+    z-index: 999; /* Säkerställ att det ligger ovanpå allt annat */
+}
+
+/* Justerad layout för lösenordsinmatningsformulär */
+#loginForm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000; /* Säkerställ att det ligger ovanpå bakgrundsskuggan */
+    width: 400px; /* Bredden på formuläret */
+    padding: 20px; /* Utrymme runt innehållet */
+    background-color: #fff; /* Bakgrundsfärg för formuläret */
+    border-radius: 10px; /* Rundade hörn */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Skugga runt formuläret */
+}
+
+/* Justerad layout för lösenordsinmatningsformulär */
+#loginForm input[type="text"],
+#loginForm input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Justerad layout för knappen */
+#loginForm button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+}
