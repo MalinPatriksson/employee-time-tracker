@@ -96,7 +96,7 @@ $(document).ready(function () {
     // När en vecka väljs, beräkna beläggningen för den valda veckan
     $('#week').change(function () {
         var selectedWeek = $(this).val();
-        var selectedMonth = $('#month').val(); 
+        var selectedMonth = $('#month').val();
 
         var occupancyPercentage = calculateOccupancyForWeek(selectedMonth, selectedWeek);
 
@@ -191,7 +191,8 @@ $(document).ready(function () {
 
     $('#downloadExcel').click(async function () {
         var month = $('#month').val(); // Hämta den valda månaden
-        var fileName = 'sammanställning - ' + month + '.xlsx'; // Skapa ett filnamn baserat på månaden
+        var selectedInterval = $('#intervalDropdown').val(); // Hämta den valda tidsperioden (månad eller vecka)
+        var fileName;
 
         // Skapa en ny arbetsbok
         var workbook = await XlsxPopulate.fromBlankAsync();
@@ -224,10 +225,18 @@ $(document).ready(function () {
         sheet.cell(`B${totalRow}`).value(totalHoursWorked).style({ bold: true });
         sheet.cell(`C${totalRow}`).value((totalBelaggning / employeesData.length).toFixed(2)).style({ bold: true }); // Genomsnittlig beläggning för alla anställda
 
-        // Beräkna antalet tillgängliga timmar för den valda månaden
-        var availableHours = getAvailableHoursForMonth(month);
+        // Beräkna antalet tillgängliga timmar för antingen månaden eller den valda veckan
+        var availableHours;
+        if (selectedInterval === "month") {
+            availableHours = getAvailableHoursForMonth(month);
+            fileName = 'sammanställning - ' + month + '.xlsx';
+        } else if (selectedInterval === "week") {
+            var selectedWeek = $('#week').val(); // Hämta den valda veckan
+            availableHours = getAvailableHoursForWeek(month, selectedWeek);
+            fileName = 'sammanställning - ' + month + ', vecka ' + selectedWeek + '.xlsx';
+        }
 
-        // Visa antalet tillgängliga timmar i Excel-filen
+        // Visa antalet tillgängliga timmar i Excel-filen för månaden eller den valda veckan
         sheet.cell(`A${totalRow + 1}`).value("Tillgängliga timmar").style({ bold: true });
         sheet.cell(`B${totalRow + 1}`).value(availableHours).style({ bold: true });
 
@@ -269,6 +278,26 @@ $(document).ready(function () {
         var availableHours = daysInMonth * 8 * employees.length; // Antag att en arbetsdag är 8 timmar och multiplicera med antalet anställda
 
         // Beräkna totala arbetade timmar för månaden
+        var totalHoursWorked = 0;
+        employeesData.forEach(function (employee) {
+            totalHoursWorked += parseFloat(employee.hoursWorked);
+        });
+
+        // Beräkna antalet timmar kvar eller överstigit
+        var remainingHours = availableHours - totalHoursWorked;
+
+        return remainingHours;
+    }
+
+    // En funktion för att beräkna tillgängliga timmar för en vecka
+    function getAvailableHoursForWeek(month, week) {
+        // Hämta antalet arbetsdagar för den valda veckan
+        var workdaysInWeek = getWorkdaysInWeek(month, week);
+
+        // Beräkna det totala antalet tillgängliga timmar för veckan
+        var availableHours = workdaysInWeek * 8 * employees.length; // Antag att en arbetsdag är 8 timmar
+
+        // Beräkna totala arbetade timmar för veckan
         var totalHoursWorked = 0;
         employeesData.forEach(function (employee) {
             totalHoursWorked += parseFloat(employee.hoursWorked);
