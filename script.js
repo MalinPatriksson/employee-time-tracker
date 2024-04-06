@@ -8,6 +8,7 @@ $(document).ready(function () {
     intervalDropdown.append($('<option>').text('Vecka').val('week'));
 
     // Dölj månads- och veckodropdowns initialt
+    $('#employeeFormGroup').hide();
     $('#monthFormGroup').hide();
     $('#weekFormGroup').hide();
 
@@ -63,12 +64,14 @@ $(document).ready(function () {
         // Dölj månads- och veckodropdowns initialt
         $('#monthFormGroup').hide();
         $('#weekFormGroup').hide();
+        $('#employeeFormGroup').show();
         if (selectedInterval === "month") {
             $('#month').val('');
             $('#employee').val(employees); // Antar att den första anställda är på index 0 i listan
             $('#monthFormGroup').show();
         } else if (selectedInterval === "week") {
             $('#month').val('');
+            $('#employeeFormGroup').show();
             $('#monthFormGroup').show(); // Visa månadsväljaren när "Vecka" väljs
             $('#weekFormGroup').show(); // Visa veckoväljaren när "Vecka" väljs
             $('#employee').val(employees); // Antar att den första anställda är på index 0 i listan
@@ -85,7 +88,7 @@ $(document).ready(function () {
     });
 
     // Definiera en array med anställda
-    var employees = ["Christian Green", "Christer Klingberg", "Per Renntun", "Jenny Dolderer", "Anders Patriksson"];
+    var employees = ["Anders Patriksson", "Christian Green", "Christer Klingberg", "Ellinor Engström", "Mikael Lundén", "Per Renntun", "Jenny Dolderer", ];
 
     // Loopa genom arrayen och lägg till varje anställd till dropdown-menyn
     var employeeDropdown = $('#employee');
@@ -373,7 +376,7 @@ $(document).ready(function () {
         employeesData = [];
         $('#month').val('');
         $('#week').val('');
-        $('#employee').val(employees);
+        $('#employeeFormGroup').hide();
         $('#hoursWorked').val('');
         $('#summary').empty();
         $('#confirmationMessage').hide(); // Dölj bekräftelsemeddelandet
