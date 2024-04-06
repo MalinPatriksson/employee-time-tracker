@@ -64,10 +64,15 @@ $(document).ready(function () {
         $('#monthFormGroup').hide();
         $('#weekFormGroup').hide();
         if (selectedInterval === "month") {
+            $('#month').val('');
+            $('#employee').val(employees); // Antar att den första anställda är på index 0 i listan
             $('#monthFormGroup').show();
         } else if (selectedInterval === "week") {
+            $('#month').val('');
             $('#monthFormGroup').show(); // Visa månadsväljaren när "Vecka" väljs
             $('#weekFormGroup').show(); // Visa veckoväljaren när "Vecka" väljs
+            $('#employee').val(employees); // Antar att den första anställda är på index 0 i listan
+
         }
     });
 
@@ -88,23 +93,50 @@ $(document).ready(function () {
         employeeDropdown.append($('<option>').text(employee));
     });
 
+    // När en vecka väljs, beräkna beläggningen för den valda veckan
+    $('#week').change(function () {
+        var selectedWeek = $(this).val();
+        var selectedMonth = $('#month').val(); 
+
+        var occupancyPercentage = calculateOccupancyForWeek(selectedMonth, selectedWeek);
+
+        // Uppdatera beläggningen för den valda veckan i gränssnittet
+        $('#occupancy').val(occupancyPercentage + '%');
+    });
+
     $('#calculate').click(function () {
         let month = $('#month').val();
+        let selectedInterval = $('#intervalDropdown').val();
         let employee = $('#employee').val();
         let hoursWorked = $('#hoursWorked').val();
+        let selectedWeek = $('#week').val();
 
         // Hämta det senaste beräknade data för den valda användaren
         let lastData = employeesData.length > 0 ? employeesData[employeesData.length - 1] : null;
 
         if (month !== '' && employee !== '' && hoursWorked !== '') {
+            // Kontrollera om intervallet är vecka och om veckoval är ifyllt
+            if (selectedInterval === 'week' && selectedWeek === '') {
+                // Visa ett rött meddelande om veckoval inte är ifyllt
+                $('#confirmationMessage').text('Välj en vecka.').removeClass('alert-success').addClass('alert-danger').fadeIn().delay(2000).fadeOut();
+                return; // Avbryt funktionen om veckoval inte är ifyllt
+            }
+
             // Om det senaste beräknade användardata är null eller om den valda användaren är annorlunda än den senaste beräknade användaren
             if (lastData === null || lastData.name !== employee) {
-                let daysInMonth = getDaysInMonth(month);
-                let totalHours = getTotalHoursForMonth(month, daysInMonth);
-                let belaggning = calculateBelaggning(hoursWorked, totalHours);
-
-                // Spara data för den beräknade personen
-                employeesData.push({ name: employee, hoursWorked: hoursWorked, belaggning: belaggning });
+                if (selectedInterval === 'month') {
+                    let daysInMonth = getDaysInMonth(month);
+                    let totalHours = getTotalHoursForMonth(month, daysInMonth);
+                    let belaggning = calculateBelaggning(hoursWorked, totalHours);
+                    // Spara data för den beräknade personen
+                    employeesData.push({ name: employee, hoursWorked: hoursWorked, belaggning: belaggning });
+                } else if (selectedInterval === 'week') {
+                    let workdaysInWeek = getWorkdaysInWeek(month, selectedWeek);
+                    let totalHoursInWeek = workdaysInWeek * 8; // Antalet arbetsdagar * antal timmar per dag
+                    let belaggning = calculateBelaggning(hoursWorked, totalHoursInWeek);
+                    // Spara data för den beräknade personen
+                    employeesData.push({ name: employee, hoursWorked: hoursWorked, belaggning: belaggning });
+                }
 
                 // Visa bekräftelsemeddelande
                 $('#confirmationMessage').text('Beräkningen är klar.').removeClass('alert-danger').addClass('alert-success').fadeIn().delay(2000).fadeOut();
@@ -120,13 +152,39 @@ $(document).ready(function () {
     });
 
     $('#showSummary').click(function () {
-        var summaryHTML = '<h1>Sammanställning för ' + $('#month').val() + '</h1>';
-        summaryHTML += '<ul>';
-        employeesData.forEach(function (employee) {
-            summaryHTML += '<p><strong>Namn:</strong> ' + employee.name + '<br>';
-            summaryHTML += '<strong>Timmar arbetade:</strong> ' + employee.hoursWorked + '<br>';
-            summaryHTML += '<strong>Beläggning:</strong> ' + employee.belaggning.toFixed(2) + '%</p><br>';
-        });
+        var selectedInterval = $('#intervalDropdown').val();
+        var selectedMonth = $('#month').val();
+        var selectedWeek = $('#week').val();
+        var summaryHTML = '<h1>';
+
+        if (selectedInterval === 'month') {
+            summaryHTML += 'Sammanställning för ' + selectedMonth;
+        } else if (selectedInterval === 'week') {
+            summaryHTML += 'Sammanställning för ' + selectedMonth + ', vecka ' + selectedWeek;
+        }
+
+        summaryHTML += '</h1><ul>';
+
+        if (selectedInterval === 'month') {
+            // Sammanställning för månaden
+            employeesData.forEach(function (employee) {
+                summaryHTML += '<p><strong>Namn:</strong> ' + employee.name + '<br>';
+                summaryHTML += '<strong>Timmar arbetade:</strong> ' + employee.hoursWorked + '<br>';
+                summaryHTML += '<strong>Beläggning:</strong> ' + employee.belaggning.toFixed(2) + '%</p><br>';
+            });
+        } else if (selectedInterval === 'week') {
+            // Sammanställning för veckan
+            var totalHoursInWeek = getTotalHoursForWeek(selectedMonth, selectedWeek);
+
+            employeesData.forEach(function (employee) {
+                var occupancyPercentage = (employee.hoursWorked / totalHoursInWeek) * 100;
+                summaryHTML += '<p><strong>Namn:</strong> ' + employee.name + '<br>';
+                summaryHTML += '<strong>Timmar arbetade:</strong> ' + employee.hoursWorked + '<br>';
+                summaryHTML += '<strong>Beläggning:</strong> ' + occupancyPercentage.toFixed(2) + '%</p><br>';
+            });
+        }
+
+        summaryHTML += '</ul>';
         $('#summary').html(summaryHTML);
         $('#downloadExcel').show();
     });
@@ -184,6 +242,23 @@ $(document).ready(function () {
         link.click();
         document.body.removeChild(link);
     });
+
+    function calculateOccupancyForWeek(selectedMonth, selectedWeek) {
+        var selectedMonthData = monthsWithWeeks.find(month => month.name === selectedMonth);
+        var selectedWeekData = selectedMonthData.weeks.find(week => week.week === parseInt(selectedWeek));
+
+        var workdaysInWeek = selectedWeekData.workdays;
+        var totalHoursInWeek = workdaysInWeek * 8 * employees.length; // Antalet arbetsdagar * antal timmar per dag * antal anställda
+        var hoursWorkedInWeek = parseInt($('#hoursWorked').val()); // Antalet timmar som faktiskt har arbetats under veckan
+
+        // Hantera fallet när de totala arbetade timmarna är noll
+        if (hoursWorkedInWeek === 0) {
+            return 0; // Returnera 0 för beläggningen om inga timmar har arbetats
+        }
+
+        var occupancyPercentage = (hoursWorkedInWeek / totalHoursInWeek) * 100;
+        return occupancyPercentage.toFixed(2); // Avrunda till två decimaler
+    }
 
     // En funktion för att beräkna antalet tillgängliga timmar för en viss månad
     function getAvailableHoursForMonth(month) {
@@ -245,16 +320,30 @@ $(document).ready(function () {
 
     // En funktion för att beräkna totala arbetstimmar för en månad
     function getTotalHoursForMonth(month, daysInMonth) {
-        // Här kan du implementera logiken för att beräkna totala arbetstimmar för den angivna månaden baserat på antalet arbetsdagar.
-        // Till exempel, om en heltidstjänst är 8 timmar per arbetsdag, multiplicera antalet arbetsdagar med 8 för att få totala timmar.
         return daysInMonth * 8; // Antag att en arbetsdag är 8 timmar
+    }
+
+    function getWorkdaysInWeek(month, week) {
+        var selectedMonthData = monthsWithWeeks.find(m => m.name === month);
+        if (selectedMonthData) {
+            var selectedWeekData = selectedMonthData.weeks.find(w => w.week === parseInt(week));
+            return selectedWeekData ? selectedWeekData.workdays : 0;
+        }
+        return 0; // Returnera 0 om månaden inte hittades
+    }
+
+    // En funktion för att beräkna totala arbetstimmar för en vecka
+    function getTotalHoursForWeek(month, week) {
+        var workdaysInWeek = getWorkdaysInWeek(month, week);
+        return workdaysInWeek * 8; // Antalet arbetsdagar * antal timmar per dag
     }
 
     // Lyssna på klickhändelse för nollställningsknappen
     $('#reset').click(function () {
         // Återställ alla fält till deras standardvärden
         employeesData = [];
-        $('#month').val('Januari');
+        $('#month').val('');
+        $('#week').val('');
         $('#employee').val(employees);
         $('#hoursWorked').val('');
         $('#summary').empty();
@@ -262,8 +351,8 @@ $(document).ready(function () {
         $('#downloadExcel').hide();
         $('#monthFormGroup').hide(); // Dölj månadsdropdownen
         $('#weekFormGroup').hide(); // Dölj veckodropdownen
+        $('#intervalDropdown').val(''); // Rensa tidsperiodsdropdownen
     });
-
     // Visa lösenordsrutan när användaren klickar på knappen
     $('#showLoginForm').click(function () {
         $('#loginForm').show();
