@@ -88,7 +88,7 @@ $(document).ready(function () {
     });
 
     // Definiera en array med anställda
-    var employees = ["Anders Patriksson", "Christian Green", "Christer Klingberg", "Ellinor Engström", "Mikael Lundén", "Per Renntun", "Jenny Dolderer", ];
+    var employees = ["Anders Patriksson", "Christian Green", "Christer Klingberg", "Ellinor Engström", "Mikael Lundén", "Jenny Dolderer", "Per Renntun"];
 
     // Loopa genom arrayen och lägg till varje anställd till dropdown-menyn
     var employeeDropdown = $('#employee');
