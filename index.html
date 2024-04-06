@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="sv">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +10,12 @@
     <!-- Anpassad CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <!-- Bakgrundsskugga för inloggning -->
-    <div class="overlay" id="loginOverlay"></div>
 
-    <!-- Lösenordsinmatningsformulär -->
+<body>
+    <!-- Bakgrundsskugga för inloggning 
+    <div class="overlay" id="loginOverlay"></div>-->
+
+    <!-- Lösenordsinmatningsformulär 
     <div id="loginForm">
         <h2 class="text-center">Ange användarnamn och lösenord</h2>
         <div class="form-group">
@@ -23,7 +25,7 @@
             <input type="password" id="password" class="form-control" placeholder="Lösenord">
         </div>
         <button id="submitButton" class="btn btn-primary">Logga in</button>
-    </div>
+    </div>-->
 
     <!-- Innehåll som är dolt tills lösenordet har angetts -->
     <div class="container" id="content" style="display:none;">
@@ -33,9 +35,21 @@
         <h1>Beläggningsprogram</h1>
         <br>
         <div class="form-group">
+            <label for="interval">Välj tidsperiod:</label>
+            <select id="intervalDropdown" class="form-control">
+                <!-- Alternativ fylls dynamiskt från JavaScript -->
+            </select>
+        </div>
+        <div class="form-group" id="monthFormGroup">
             <label for="month">Välj månad:</label>
             <select id="month" class="form-control">
-                <!-- Dynamiskt fyllt med månader från JavaScript -->
+                <!-- Alternativ fylls dynamiskt från JavaScript -->
+            </select>
+        </div>
+        <div class="form-group" id="weekFormGroup">
+            <label for="week">Välj vecka:</label>
+            <select id="week" class="form-control">
+                <!-- Alternativ fylls dynamiskt från JavaScript -->
             </select>
         </div>
         <div class="form-group">
@@ -72,5 +86,5 @@
     <!-- Anpassad JavaScript -->
     <script src="script.js"></script>
 </body>
-</html>
 
+</html>

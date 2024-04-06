@@ -1,6 +1,16 @@
 $(document).ready(function () {
     var employeesData = [];
 
+    // Här fyller du dropdownen för tidsperiod med alternativ
+    var intervalDropdown = $('#intervalDropdown');
+    intervalDropdown.append($('<option>').text('Välj tidsperiod').val('')); // Tom förvaltning
+    intervalDropdown.append($('<option>').text('Månad').val('month'));
+    intervalDropdown.append($('<option>').text('Vecka').val('week'));
+
+    // Dölj månads- och veckodropdowns initialt
+    $('#monthFormGroup').hide();
+    $('#weekFormGroup').hide();
+
     // Definiera en array med månader och antal arbetsdagar
     var monthsWithWorkdays = [
         { name: "Januari", workdays: 22 },
@@ -16,6 +26,50 @@ $(document).ready(function () {
         { name: "November", workdays: 22 },
         { name: "December", workdays: 18 }
     ];
+
+    // Definiera en array med månader, veckor och antal arbetsdagar
+    var monthsWithWeeks = [
+        { name: "Januari", weeks: [{ week: 1, workdays: 4 }, { week: 2, workdays: 5 }, { week: 3, workdays: 5 }, { week: 4, workdays: 5 }, { week: 5, workdays: 3 }] },
+        { name: "Februari", weeks: [{ week: 5, workdays: 2 }, { week: 6, workdays: 5 }, { week: 7, workdays: 5 }, { week: 8, workdays: 5 }, { week: 9, workdays: 4 }] },
+        { name: "Mars", weeks: [{ week: 9, workdays: 1 }, { week: 10, workdays: 5 }, { week: 11, workdays: 5 }, { week: 12, workdays: 5 }, { week: 13, workdays: 4 }] },
+        { name: "April", weeks: [{ week: 14, workdays: 4 }, { week: 15, workdays: 5 }, { week: 16, workdays: 5 }, { week: 17, workdays: 5 }, { week: 18, workdays: 2 }] },
+        { name: "Maj", weeks: [{ week: 18, workdays: 2 }, { week: 19, workdays: 5 }, { week: 20, workdays: 5 }, { week: 21, workdays: 5 }, { week: 22, workdays: 5 }] },
+        { name: "Juni", weeks: [{ week: 23, workdays: 4 }, { week: 24, workdays: 5 }, { week: 25, workdays: 4 }, { week: 26, workdays: 5 }] },
+        { name: "Juli", weeks: [{ week: 27, workdays: 5 }, { week: 28, workdays: 5 }, { week: 29, workdays: 5 }, { week: 30, workdays: 5 }, { week: 31, workdays: 3 }] },
+        { name: "Augusti", weeks: [{ week: 31, workdays: 2 }, { week: 32, workdays: 5 }, { week: 33, workdays: 5 }, { week: 34, workdays: 5 }, { week: 35, workdays: 5 }] },
+        { name: "September", weeks: [{ week: 36, workdays: 5 }, { week: 37, workdays: 5 }, { week: 38, workdays: 5 }, { week: 39, workdays: 5 }, { week: 40, workdays: 1 }] },
+        { name: "Oktober", weeks: [{ week: 40, workdays: 4 }, { week: 41, workdays: 5 }, { week: 42, workdays: 5 }, { week: 43, workdays: 5 }, { week: 44, workdays: 4 }] },
+        { name: "November", weeks: [{ week: 45, workdays: 5 }, { week: 46, workdays: 5 }, { week: 47, workdays: 5 }, { week: 48, workdays: 5 }] },
+        { name: "December", weeks: [{ week: 49, workdays: 5 }, { week: 50, workdays: 5 }, { week: 51, workdays: 5 }, { week: 52, workdays: 1 }] }
+    ];
+
+
+    // När en månad väljs, fyll veckodropdownen med veckor för den valda månaden
+    $('#month').change(function () {
+        var selectedMonth = $(this).val();
+        $('#week').empty(); // Rensa veckodropdownen
+        $.each(monthsWithWeeks, function (index, month) {
+            if (month.name === selectedMonth) {
+                $.each(month.weeks, function (index, week) {
+                    $('#week').append($('<option>').text(selectedMonth + ', vecka ' + week.week).val(week.week)); // Uppdatering här
+                });
+            }
+        });
+    });
+
+    // Visa antingen månads- eller veckodropdownen baserat på användarens val
+    intervalDropdown.change(function () {
+        var selectedInterval = $(this).val();
+        // Dölj månads- och veckodropdowns initialt
+        $('#monthFormGroup').hide();
+        $('#weekFormGroup').hide();
+        if (selectedInterval === "month") {
+            $('#monthFormGroup').show();
+        } else if (selectedInterval === "week") {
+            $('#monthFormGroup').show(); // Visa månadsväljaren när "Vecka" väljs
+            $('#weekFormGroup').show(); // Visa veckoväljaren när "Vecka" väljs
+        }
+    });
 
     // Loopa genom arrayen och lägg till bara de månader som har arbetsdagar till dropdown-menyn
     var monthDropdown = $('#month');
@@ -80,12 +134,12 @@ $(document).ready(function () {
     $('#downloadExcel').click(async function () {
         var month = $('#month').val(); // Hämta den valda månaden
         var fileName = 'sammanställning - ' + month + '.xlsx'; // Skapa ett filnamn baserat på månaden
-    
+
         // Skapa en ny arbetsbok
         var workbook = await XlsxPopulate.fromBlankAsync();
-    
+
         const sheet = workbook.sheet(0);
-    
+
         // Beräkna totala arbetade timmar och beläggningens procentandel för alla anställda
         var totalHoursWorked = 0;
         var totalBelaggning = 0;
@@ -93,35 +147,35 @@ $(document).ready(function () {
             totalHoursWorked += parseFloat(employee.hoursWorked);
             totalBelaggning += parseFloat(employee.belaggning);
         });
-    
+
         // Lägg till rubriker för data i Excel-filen och formatera dem som fetstil
         sheet.cell("A1").value("Anställd").style({ bold: true });
         sheet.cell("B1").value("Timmar arbetade").style({ bold: true });
         sheet.cell("C1").value("Beläggning (%)").style({ bold: true });
-    
+
         // Lägg till data för varje anställd i Excel-filen och formatera timmar arbetade som tal
         employeesData.forEach(function (employee, index) {
             sheet.cell(`A${index + 2}`).value(employee.name);
             sheet.cell(`B${index + 2}`).value(parseFloat(employee.hoursWorked)); // Konvertera till tal för att undvika textformat
             sheet.cell(`C${index + 2}`).value(employee.belaggning.toFixed(2));
         });
-    
+
         // Lägg till totala värden för alla anställda i Excel-filen och formatera dem som fetstil
         var totalRow = employeesData.length + 2; // Anta att den totala raden är efter den sista anställdas rad
         sheet.cell(`A${totalRow}`).value("Totalt").style({ bold: true });
         sheet.cell(`B${totalRow}`).value(totalHoursWorked).style({ bold: true });
         sheet.cell(`C${totalRow}`).value((totalBelaggning / employeesData.length).toFixed(2)).style({ bold: true }); // Genomsnittlig beläggning för alla anställda
-    
+
         // Beräkna antalet tillgängliga timmar för den valda månaden
         var availableHours = getAvailableHoursForMonth(month);
-        
+
         // Visa antalet tillgängliga timmar i Excel-filen
         sheet.cell(`A${totalRow + 1}`).value("Tillgängliga timmar").style({ bold: true });
         sheet.cell(`B${totalRow + 1}`).value(availableHours).style({ bold: true });
-    
+
         // Skapa en data-URL från arbetsboken
         var dataURL = await workbook.outputAsync();
-    
+
         // Skapa en länk för att ladda ner filen med det dynamiska filnamnet
         var link = document.createElement('a');
         link.href = window.URL.createObjectURL(new Blob([dataURL], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
@@ -206,6 +260,8 @@ $(document).ready(function () {
         $('#summary').empty();
         $('#confirmationMessage').hide(); // Dölj bekräftelsemeddelandet
         $('#downloadExcel').hide();
+        $('#monthFormGroup').hide(); // Dölj månadsdropdownen
+        $('#weekFormGroup').hide(); // Dölj veckodropdownen
     });
 
     // Visa lösenordsrutan när användaren klickar på knappen
@@ -218,7 +274,6 @@ $(document).ready(function () {
     $('#submitButton').click(function () {
         var username = $('#username').val();
         var password = $('#password').val();
-        // Här kan du lägga till din inloggningslogik för att kontrollera användarnamn och lösenord
         // Om inloggningen är framgångsrik, dölj lösenordsrutan och visa innehållet
         if (username === 'admin' && password === 'password') {
             $('#loginForm').hide();
