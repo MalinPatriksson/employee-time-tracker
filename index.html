@@ -55,18 +55,20 @@
             <input type="number" id="hoursWorked" class="form-control" placeholder="Ange antal timmar">
         </div>
 
-        <!-- Knappsektion -->
-                <!-- Knapp för att beräkna beläggning -->
-        <button id="calculate" class="btn btn-primary mb-4">Beräkna beläggning</button>
-        <!-- Knapp för att visa sammanställningen -->
-        <button id="showSummary" class="btn btn-success mb-4">Visa sammanställning</button>
-        <!-- Nollställningsknapp -->
-        <button id="reset" class="btn btn-secondary mb-4">Nollställ</button>
-        <div class="d-flex justify-content-end">
-    </div>
+               <!-- Knappsektion -->
+        <div class="d-flex mb-4">
+            <!-- Knappar till vänster -->
+            <div>
+                <button id="calculate" class="btn btn-primary me-2">Beräkna beläggning</button>
+                <button id="showSummary" class="btn btn-success me-2">Visa sammanställning</button>
+                <button id="reset" class="btn btn-secondary">Nollställ</button>
+            </div>
+        
+            <!-- Knapp längst till höger -->
+            <button id="toggleEmployeeSection" class="btn btn-secondary ms-auto">Hantera anställda</button>
+        </div>
 
-        <!-- Knapp för att visa hanteringssektionen -->
-        <button id="toggleEmployeeSection" class="btn btn-secondary mb-3">Hantera anställda</button>
+
         
         <!-- Sektionen för att lägga till och ta bort anställda (gömd från start) -->
         <div id="employeeManagementSection" style="display: none;">
