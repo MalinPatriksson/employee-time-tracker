@@ -13,36 +13,38 @@ $(document).ready(function () {
     $('#weekFormGroup').hide();
 
     // Definiera en array med månader och antal arbetsdagar
-    var monthsWithWorkdays = [
-        { name: "Januari", workdays: 22 },
-        { name: "Februari", workdays: 21 },
-        { name: "Mars", workdays: 19 },
-        { name: "April", workdays: 20 },
-        { name: "Maj", workdays: 20 },
-        { name: "Juni", workdays: 20 },
-        { name: "Juli", workdays: 20 },
-        { name: "Augusti", workdays: 19 },
-        { name: "September", workdays: 19 },
-        { name: "Oktober", workdays: 22 },
-        { name: "November", workdays: 22 },
-        { name: "December", workdays: 18 }
-    ];
+    // Array med månader och antal arbetsdagar
+var monthsWithWorkdays = [
+    { name: "Januari", workdays: 21 },
+    { name: "Februari", workdays: 20 },
+    { name: "Mars", workdays: 21 },
+    { name: "April", workdays: 20 },
+    { name: "Maj", workdays: 20 },
+    { name: "Juni", workdays: 19 },
+    { name: "Juli", workdays: 23 },
+    { name: "Augusti", workdays: 21 },
+    { name: "September", workdays: 22 },
+    { name: "Oktober", workdays: 23 },
+    { name: "November", workdays: 20 },
+    { name: "December", workdays: 19 }
+];
 
-    // Definiera en array med månader, veckor och antal arbetsdagar
-    var monthsWithWeeks = [
-        { name: "Januari", weeks: [{ week: 1, workdays: 4 }, { week: 2, workdays: 5 }, { week: 3, workdays: 5 }, { week: 4, workdays: 5 }, { week: 5, workdays: 3 }] },
-        { name: "Februari", weeks: [{ week: 5, workdays: 2 }, { week: 6, workdays: 5 }, { week: 7, workdays: 5 }, { week: 8, workdays: 5 }, { week: 9, workdays: 4 }] },
-        { name: "Mars", weeks: [{ week: 9, workdays: 1 }, { week: 10, workdays: 5 }, { week: 11, workdays: 5 }, { week: 12, workdays: 5 }, { week: 13, workdays: 4 }] },
-        { name: "April", weeks: [{ week: 14, workdays: 4 }, { week: 15, workdays: 5 }, { week: 16, workdays: 5 }, { week: 17, workdays: 5 }, { week: 18, workdays: 2 }] },
-        { name: "Maj", weeks: [{ week: 18, workdays: 2 }, { week: 19, workdays: 5 }, { week: 20, workdays: 5 }, { week: 21, workdays: 5 }, { week: 22, workdays: 5 }] },
-        { name: "Juni", weeks: [{ week: 23, workdays: 4 }, { week: 24, workdays: 5 }, { week: 25, workdays: 4 }, { week: 26, workdays: 5 }] },
-        { name: "Juli", weeks: [{ week: 27, workdays: 5 }, { week: 28, workdays: 5 }, { week: 29, workdays: 5 }, { week: 30, workdays: 5 }, { week: 31, workdays: 3 }] },
-        { name: "Augusti", weeks: [{ week: 31, workdays: 2 }, { week: 32, workdays: 5 }, { week: 33, workdays: 5 }, { week: 34, workdays: 5 }, { week: 35, workdays: 5 }] },
-        { name: "September", weeks: [{ week: 36, workdays: 5 }, { week: 37, workdays: 5 }, { week: 38, workdays: 5 }, { week: 39, workdays: 5 }, { week: 40, workdays: 1 }] },
-        { name: "Oktober", weeks: [{ week: 40, workdays: 4 }, { week: 41, workdays: 5 }, { week: 42, workdays: 5 }, { week: 43, workdays: 5 }, { week: 44, workdays: 4 }] },
-        { name: "November", weeks: [{ week: 45, workdays: 5 }, { week: 46, workdays: 5 }, { week: 47, workdays: 5 }, { week: 48, workdays: 5 }] },
-        { name: "December", weeks: [{ week: 49, workdays: 5 }, { week: 50, workdays: 5 }, { week: 51, workdays: 5 }, { week: 52, workdays: 1 }] }
-    ];
+// Array med månader, veckor och antal arbetsdagar
+var monthsWithWeeks = [
+    { name: "Januari", weeks: [{ week: 1, workdays: 3 }, { week: 2, workdays: 5 }, { week: 3, workdays: 5 }, { week: 4, workdays: 5 }, { week: 5, workdays: 3 }] },
+    { name: "Februari", weeks: [{ week: 5, workdays: 2 }, { week: 6, workdays: 5 }, { week: 7, workdays: 5 }, { week: 8, workdays: 5 }, { week: 9, workdays: 3 }] },
+    { name: "Mars", weeks: [{ week: 9, workdays: 2 }, { week: 10, workdays: 5 }, { week: 11, workdays: 5 }, { week: 12, workdays: 5 }, { week: 13, workdays: 4 }] },
+    { name: "April", weeks: [{ week: 14, workdays: 4 }, { week: 15, workdays: 5 }, { week: 16, workdays: 5 }, { week: 17, workdays: 5 }, { week: 18, workdays: 1 }] },
+    { name: "Maj", weeks: [{ week: 18, workdays: 1 }, { week: 19, workdays: 4 }, { week: 20, workdays: 5 }, { week: 21, workdays: 5 }, { week: 22, workdays: 5 }] },
+    { name: "Juni", weeks: [{ week: 23, workdays: 4 }, { week: 24, workdays: 5 }, { week: 25, workdays: 4 }, { week: 26, workdays: 5 }] },
+    { name: "Juli", weeks: [{ week: 27, workdays: 5 }, { week: 28, workdays: 5 }, { week: 29, workdays: 5 }, { week: 30, workdays: 5 }, { week: 31, workdays: 3 }] },
+    { name: "Augusti", weeks: [{ week: 31, workdays: 2 }, { week: 32, workdays: 5 }, { week: 33, workdays: 5 }, { week: 34, workdays: 5 }, { week: 35, workdays: 4 }] },
+    { name: "September", weeks: [{ week: 36, workdays: 5 }, { week: 37, workdays: 5 }, { week: 38, workdays: 5 }, { week: 39, workdays: 5 }, { week: 40, workdays: 2 }] },
+    { name: "Oktober", weeks: [{ week: 40, workdays: 3 }, { week: 41, workdays: 5 }, { week: 42, workdays: 5 }, { week: 43, workdays: 5 }, { week: 44, workdays: 5 }] },
+    { name: "November", weeks: [{ week: 45, workdays: 5 }, { week: 46, workdays: 5 }, { week: 47, workdays: 5 }, { week: 48, workdays: 5 }] },
+    { name: "December", weeks: [{ week: 49, workdays: 5 }, { week: 50, workdays: 5 }, { week: 51, workdays: 5 }, { week: 52, workdays: 4 }] }
+];
+
 
 
     // När en månad väljs, fyll veckodropdownen med veckor för den valda månaden
