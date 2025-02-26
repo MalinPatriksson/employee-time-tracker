@@ -236,7 +236,7 @@ $('#showSummary').click(function () {
         totalSummaryHTML += '<p><strong>Genomsnittlig beläggning:</strong> ' + avgBelaggning + '%</p>';
         totalSummaryHTML += '<p><strong>Tillgängliga timmar:</strong> ' + remainingHours + '</p>';
 
-    $('#totalSummary').html(totalSummaryHTML); // Visa total sammanställning
+        $('#totalSummary').html(totalSummaryHTML).fadeIn();
         
     } else if (selectedInterval === 'week') {
         // Sammanställning för veckan
@@ -260,7 +260,7 @@ $('#showSummary').click(function () {
         totalSummaryHTML += '<p><strong>Genomsnittlig beläggning:</strong> ' + avgBelaggningWeek + '%</p>';
         totalSummaryHTML += '<p><strong>Kvarvarande timmar:</strong> ' + remainingHoursWeek + '</p>';
 
-        $('#totalSummary').html(totalSummaryHTML);
+        $('#totalSummary').html(totalSummaryHTML).fadeIn();
     }
 
     summaryHTML += '</ul>';
