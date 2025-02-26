@@ -8,7 +8,6 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="bootstrap (3).css">  
     <link rel="stylesheet" href="style.css">
-      
 </head>
 
 <body>
@@ -16,7 +15,6 @@
     <div class="overlay" id="loginOverlay"></div>
 
     <!-- Lösenordsinmatningsformulär -->
-
     <div id="loginForm">
         <h2 class="text-center text-black">Ange användarnamn och lösenord</h2>
         <div class="form-group">
@@ -27,66 +25,58 @@
         </div>
         <button id="submitButton" class="btn btn-primary">Logga in</button>
     </div>
+
     <!-- Innehåll som är dolt tills lösenordet har angetts -->
     <div class="container" id="content" style="display:none;">
     </div>
+
     <div class="container">
         <br><br>
         <h1>Beläggningsprogram</h1>
         <br>
         <div class="form-group mb-3">
             <label for="interval">Välj tidsperiod:</label>
-            <select id="intervalDropdown" class="form-control">
-                <!-- Alternativ fylls dynamiskt från JavaScript -->
-            </select>
+            <select id="intervalDropdown" class="form-control"></select>
         </div>
         <div class="form-group mb-3" id="monthFormGroup">
             <label for="month">Välj månad:</label>
-            <select id="month" class="form-control">
-                <!-- Alternativ fylls dynamiskt från JavaScript -->
-            </select>
+            <select id="month" class="form-control"></select>
         </div>
         <div class="form-group mb-3" id="weekFormGroup">
             <label for="week">Välj vecka:</label>
-            <select id="week" class="form-control">
-                <!-- Alternativ fylls dynamiskt från JavaScript -->
-            </select>
+            <select id="week" class="form-control"></select>
         </div>
         <div class="form-group mb-3" id="employeeFormGroup">
             <label for="employee">Välj anställd:</label>
-            <select id="employee" class="form-control">
-                <!-- Dynamiskt fyllt med anställda från JavaScript -->
-            </select>
+            <select id="employee" class="form-control"></select>
         </div>
         <div class="form-group mb-3">
             <label for="hoursWorked">Antal arbetade timmar:</label>
             <input type="number" id="hoursWorked" class="form-control" placeholder="Ange antal timmar">
         </div>
-        <!-- Knapp för att beräkna beläggning -->
-        <button id="calculate" class="btn btn-primary mb-4">Beräkna beläggning</button>
-        <!-- Knapp för att visa sammanställningen -->
-        <button id="showSummary" class="btn btn-success mb-4">Visa sammanställning</button>
-        <!-- Nollställningsknapp -->
-        <button id="reset" class="btn btn-secondary mb-4">Nollställ</button>
-        <div class="d-flex justify-content-end">
-        <!-- Lägg till anställd -->
-        <input type="text" id="newEmployee" class="form-control me-2" style="width: auto;" placeholder="Skriv in namn">
-        <button id="addEmployee" class="btn btn-success me-2">Lägg till</button>
-    
-        <!-- Ta bort anställd -->
-        <select id="removeEmployee" class="form-control me-2" style="width: auto;"></select>
-        <button id="deleteEmployee" class="btn btn-danger">Ta bort</button>
-    </div>
+
+        <!-- Knappsektion -->
+        <div class="d-flex justify-content-between mb-4">
+            <button id="calculate" class="btn btn-primary">Beräkna beläggning</button>
+            <button id="showSummary" class="btn btn-success">Visa sammanställning</button>
+            <button id="reset" class="btn btn-secondary">Nollställ</button>
+            <button id="downloadExcel" class="btn btn-info" style="display: none;">Ladda ner Excel</button>
+        </div>
+
+        <!-- Hantera anställda -->
+        <h2>Hantera anställda</h2>
+        <div class="d-flex mb-3">
+            <input type="text" id="newEmployee" class="form-control me-2" placeholder="Skriv in namn">
+            <button id="addEmployee" class="btn btn-success">Lägg till</button>
+        </div>
+
+        <!-- Lista över anställda med radera-knapp -->
+        <ul id="employeeList" class="list-group"></ul>
 
         <!-- Resultatområde -->
         <div id="results" class="mt-3"></div>
         <div id="confirmationMessage" class="alert alert-success" style="display: none;" role="alert"></div>
-        <!-- Område för sammanställning -->
         <div id="summary" class="mt-3"></div>
-        <!-- Knapp för att ladda ner Excel-filen -->
-        <div class="d-flex justify-content-end">
-            <button id="downloadExcel" class="btn btn-info" style="display: none;">Ladda ner Excel</button>
-        </div>
     </div>
 
     <!-- Bootstrap JavaScript och jQuery -->
