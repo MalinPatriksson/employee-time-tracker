@@ -90,7 +90,7 @@ var monthsWithWeeks = [
     });
 
     // Definiera en array med anställda
-    var employees = ["Anders Patriksson", "Christian Green", "Christer Klingberg", "Ellinor Engström", "Mikael Lundén", "Jenny Dolderer", "Per Renntun"];
+    var employees = ["Anders Patriksson", "Christian Green", "Christer Klingberg", "Ellinor Engström", "Mikael Lundén", "Jenny Dolderer", "Per Renntun", "Jonathan Tinworth"];
 
     // Loopa genom arrayen och lägg till varje anställd till dropdown-menyn
     var employeeDropdown = $('#employee');
@@ -320,37 +320,38 @@ var monthsWithWeeks = [
         return (hoursWorked / totalHours) * 100;
     }
 
-    // En funktion för att hämta antalet arbetsdagar i en viss månad
-    function getDaysInMonth(month) {
-        switch (month) {
-            case "Januari":
-                return 22;
-            case "Februari":
-                return 21;
-            case "Mars":
-                return 19;
-            case "April":
-                return 20;
-            case "Maj":
-                return 20;
-            case "Juni":
-                return 20;
-            case "Juli":
-                return 20;
-            case "Augusti":
-                return 19;
-            case "September":
-                return 19;
-            case "Oktober":
-                return 22;
-            case "November":
-                return 22;
-            case "December":
-                return 18;
-            default:
-                return 0; // Returnera 0 om månaden inte hittades
-        }
+   // En funktion för att hämta antalet arbetsdagar i en viss månad för 2025
+function getDaysInMonth(month) {
+    switch (month) {
+        case "Januari":
+            return 21;
+        case "Februari":
+            return 20;
+        case "Mars":
+            return 21;
+        case "April":
+            return 20;
+        case "Maj":
+            return 20;
+        case "Juni":
+            return 19;
+        case "Juli":
+            return 23;
+        case "Augusti":
+            return 21;
+        case "September":
+            return 22;
+        case "Oktober":
+            return 23;
+        case "November":
+            return 20;
+        case "December":
+            return 19;
+        default:
+            return 0; // Returnera 0 om månaden inte hittades
     }
+}
+
 
     // En funktion för att beräkna totala arbetstimmar för en månad
     function getTotalHoursForMonth(month, daysInMonth) {
