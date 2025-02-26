@@ -196,43 +196,77 @@ updateEmployeeLists();
         }
     });
 
-    $('#showSummary').click(function () {
-        var selectedInterval = $('#intervalDropdown').val();
-        var selectedMonth = $('#month').val();
-        var selectedWeek = $('#week').val();
-        var summaryHTML = '<h1>';
+$('#showSummary').click(function () {
+    var selectedInterval = $('#intervalDropdown').val();
+    var selectedMonth = $('#month').val();
+    var selectedWeek = $('#week').val();
+    var summaryHTML = '<h1>';
 
-        if (selectedInterval === 'month') {
-            summaryHTML += 'Sammanställning för ' + selectedMonth;
-        } else if (selectedInterval === 'week') {
-            summaryHTML += 'Sammanställning för ' + selectedMonth + ', vecka ' + selectedWeek;
-        }
+    if (selectedInterval === 'month') {
+        summaryHTML += 'Sammanställning för ' + selectedMonth;
+    } else if (selectedInterval === 'week') {
+        summaryHTML += 'Sammanställning för ' + selectedMonth + ', vecka ' + selectedWeek;
+    }
 
-        summaryHTML += '</h1><ul>';
+    summaryHTML += '</h1><ul>';
 
-        if (selectedInterval === 'month') {
-            // Sammanställning för månaden
-            employeesData.forEach(function (employee) {
-                summaryHTML += '<p><strong>Namn:</strong> ' + employee.name + '<br>';
-                summaryHTML += '<strong>Timmar arbetade:</strong> ' + employee.hoursWorked + '<br>';
-                summaryHTML += '<strong>Beläggning:</strong> ' + employee.belaggning.toFixed(2) + '%</p><br>';
-            });
-        } else if (selectedInterval === 'week') {
-            // Sammanställning för veckan
-            var totalHoursInWeek = getTotalHoursForWeek(selectedMonth, selectedWeek);
+    var totalHoursWorked = 0;
+    var totalBelaggning = 0;
+    var employeeCount = employeesData.length;
 
-            employeesData.forEach(function (employee) {
-                var occupancyPercentage = (employee.hoursWorked / totalHoursInWeek) * 100;
-                summaryHTML += '<p><strong>Namn:</strong> ' + employee.name + '<br>';
-                summaryHTML += '<strong>Timmar arbetade:</strong> ' + employee.hoursWorked + '<br>';
-                summaryHTML += '<strong>Beläggning:</strong> ' + occupancyPercentage.toFixed(2) + '%</p><br>';
-            });
-        }
+    if (selectedInterval === 'month') {
+        // Sammanställning för månaden
+        employeesData.forEach(function (employee) {
+            summaryHTML += '<p><strong>Namn:</strong> ' + employee.name + '<br>';
+            summaryHTML += '<strong>Timmar arbetade:</strong> ' + employee.hoursWorked + '<br>';
+            summaryHTML += '<strong>Beläggning:</strong> ' + employee.belaggning.toFixed(2) + '%</p><br>';
 
-        summaryHTML += '</ul>';
-        $('#summary').html(summaryHTML);
-        $('#downloadExcel').show();
-    });
+            totalHoursWorked += parseFloat(employee.hoursWorked);
+            totalBelaggning += parseFloat(employee.belaggning);
+        });
+
+        // Beräkna genomsnittlig beläggning och kvarvarande timmar
+        let availableHours = getAvailableHoursForMonth(selectedMonth);
+        let avgBelaggning = employeeCount > 0 ? (totalBelaggning / employeeCount).toFixed(2) : 0;
+        let remainingHours = availableHours - totalHoursWorked;
+
+        // Lägg till total sammanställning längst ner
+        var totalSummaryHTML = '<h3>Totalt</h3>';
+        totalSummaryHTML += '<p><strong>Totalt arbetade timmar:</strong> ' + totalHoursWorked + '</p>';
+        totalSummaryHTML += '<p><strong>Genomsnittlig beläggning:</strong> ' + avgBelaggning + '%</p>';
+        totalSummaryHTML += '<p><strong>Kvarvarande timmar:</strong> ' + remainingHours + '</p>';
+
+        $('#totalSummary').html(totalSummaryHTML);
+    } else if (selectedInterval === 'week') {
+        // Sammanställning för veckan
+        var totalHoursInWeek = getTotalHoursForWeek(selectedMonth, selectedWeek);
+
+        employeesData.forEach(function (employee) {
+            var occupancyPercentage = (employee.hoursWorked / totalHoursInWeek) * 100;
+            summaryHTML += '<p><strong>Namn:</strong> ' + employee.name + '<br>';
+            summaryHTML += '<strong>Timmar arbetade:</strong> ' + employee.hoursWorked + '<br>';
+            summaryHTML += '<strong>Beläggning:</strong> ' + occupancyPercentage.toFixed(2) + '%</p><br>';
+
+            totalHoursWorked += parseFloat(employee.hoursWorked);
+        });
+
+        let remainingHoursWeek = totalHoursInWeek - totalHoursWorked;
+        let avgBelaggningWeek = employeeCount > 0 ? (totalHoursWorked / totalHoursInWeek * 100).toFixed(2) : 0;
+
+        // Lägg till total sammanställning för veckan
+        var totalSummaryHTML = '<h3>Totalt</h3>';
+        totalSummaryHTML += '<p><strong>Totalt arbetade timmar:</strong> ' + totalHoursWorked + '</p>';
+        totalSummaryHTML += '<p><strong>Genomsnittlig beläggning:</strong> ' + avgBelaggningWeek + '%</p>';
+        totalSummaryHTML += '<p><strong>Kvarvarande timmar:</strong> ' + remainingHoursWeek + '</p>';
+
+        $('#totalSummary').html(totalSummaryHTML);
+    }
+
+    summaryHTML += '</ul>';
+    $('#summary').html(summaryHTML);
+    $('#downloadExcel').show();
+});
+
 
     $('#downloadExcel').click(async function () {
         var month = $('#month').val(); // Hämta den valda månaden
