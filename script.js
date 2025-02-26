@@ -230,11 +230,11 @@ $('#showSummary').click(function () {
         let avgBelaggning = employeeCount > 0 ? (totalBelaggning / employeeCount).toFixed(2) : 0;
         let remainingHours = availableHours - totalHoursWorked;
 
-        // Lägg till total sammanställning längst ner
+        // Lägg till total sammanställning
         var totalSummaryHTML = '<h3>Totalt</h3>';
-        totalSummaryHTML += '<p><strong>Totalt arbetade timmar:</strong> ' + totalHoursWorked + '</p>';
+        totalSummaryHTML += '<p><strong>Timmar arbetade:</strong> ' + totalHoursWorked + '</p>';
         totalSummaryHTML += '<p><strong>Genomsnittlig beläggning:</strong> ' + avgBelaggning + '%</p>';
-        totalSummaryHTML += '<p><strong>Kvarvarande timmar:</strong> ' + remainingHours + '</p>';
+        totalSummaryHTML += '<p><strong>Tillgängliga timmar:</strong> ' + availableHours + '</p>';
 
         $('#totalSummary').html(totalSummaryHTML);
     } else if (selectedInterval === 'week') {
