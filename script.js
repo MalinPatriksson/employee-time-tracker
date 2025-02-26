@@ -96,36 +96,47 @@ var monthsWithWeeks = [
         employeeDropdown.append($('<option>').text(employee));
     });
 
-        // Funktion för att uppdatera dropdown-menyer med anställda
-    function updateEmployeeDropdowns() {
-        var employeeDropdown = $('#employee');
-        var removeEmployeeDropdown = $('#removeEmployee');
-        employeeDropdown.empty();
-        removeEmployeeDropdown.empty();
-        $.each(employees, function (index, employee) {
-            employeeDropdown.append($('<option>').text(employee));
-            removeEmployeeDropdown.append($('<option>').text(employee).val(employee));
-        });
+       // Funktion för att uppdatera både dropdown och listan med radera-knappar
+    function updateEmployeeLists() {
+    var employeeDropdown = $('#employee');
+    var employeeList = $('#employeeList');
+
+    // Rensa både dropdown och listan
+    employeeDropdown.empty();
+    employeeList.empty();
+
+    $.each(employees, function (index, employee) {
+        // Lägg till i dropdown-menyn
+        employeeDropdown.append($('<option>').text(employee));
+
+        // Lägg till i radera-listan
+        var listItem = $('<li class="list-group-item d-flex justify-content-between align-items-center">')
+            .text(employee)
+            .append(
+                $('<button class="btn btn-danger btn-sm ms-2">🗑️</button>').click(function () {
+                    employees.splice(index, 1);
+                    updateEmployeeLists(); // Uppdatera båda listorna när en anställd tas bort
+                })
+            );
+
+        employeeList.append(listItem);
+    });
+}
+
+// Lägg till ny anställd och uppdatera båda listorna
+$('#addEmployee').click(function () {
+    var newEmployee = $('#newEmployee').val().trim();
+    if (newEmployee !== "" && !employees.includes(newEmployee)) {
+        employees.push(newEmployee);
+        updateEmployeeLists();
+        $('#newEmployee').val(''); // Rensa inputfältet
     }
+});
 
-    updateEmployeeDropdowns();
+// Uppdatera listor när sidan laddas
+updateEmployeeLists();
 
-    // Lägg till ny anställd
-    $('#addEmployee').click(function () {
-        var newEmployee = $('#newEmployee').val().trim();
-        if (newEmployee !== "" && !employees.includes(newEmployee)) {
-            employees.push(newEmployee);
-            updateEmployeeDropdowns();
-            $('#newEmployee').val(''); // Rensa inputfältet
-        }
-    });
 
-    // Ta bort anställd
-    $('#deleteEmployee').click(function () {
-        var employeeToRemove = $('#removeEmployee').val();
-        employees = employees.filter(e => e !== employeeToRemove);
-        updateEmployeeDropdowns();
-    });
 
     // När en vecka väljs, beräkna beläggningen för den valda veckan
     $('#week').change(function () {
