@@ -236,7 +236,7 @@ $('#showSummary').click(function () {
         totalSummaryHTML += '<p><strong>Genomsnittlig beläggning:</strong> ' + avgBelaggning + '%</p>';
         totalSummaryHTML += '<p><strong>Tillgängliga timmar:</strong> ' + remainingHours + '</p>';
 
-    $('#totalSummary').html(totalSummaryHTML).fadeIn(); // Visa total sammanställning
+    $('#totalSummary').html(totalSummaryHTML); // Visa total sammanställning
         
     } else if (selectedInterval === 'week') {
         // Sammanställning för veckan
@@ -349,45 +349,26 @@ $('#showSummary').click(function () {
         return occupancyPercentage.toFixed(2); // Avrunda till två decimaler
     }
 
-    // En funktion för att beräkna antalet tillgängliga timmar för en viss månad
-    function getAvailableHoursForMonth(month) {
-        // Hämta antalet arbetsdagar för den valda månaden
-        var daysInMonth = getDaysInMonth(month);
+    // Funktion för att beräkna tillgängliga timmar för en månad
+function getAvailableHoursForMonth(month) {
+    var selectedMonthData = monthsWithWorkdays.find(m => m.name === month);
+    if (!selectedMonthData) return 0; // Om månaden inte finns, returnera 0
 
-        // Beräkna det totala antalet tillgängliga timmar för månaden
-        var availableHours = daysInMonth * 8 * employees.length; // Antag att en arbetsdag är 8 timmar och multiplicera med antalet anställda
+    var totalHours = selectedMonthData.workdays * 8 * employees.length; // Korrekt beräkning
 
-        // Beräkna totala arbetade timmar för månaden
-        var totalHoursWorked = 0;
-        employeesData.forEach(function (employee) {
-            totalHoursWorked += parseFloat(employee.hoursWorked);
-        });
+    return totalHours; // Returnera endast tillgängliga timmar
+}
 
-        // Beräkna antalet timmar kvar eller överstigit
-        var remainingHours = availableHours - totalHoursWorked;
+// Funktion för att beräkna tillgängliga timmar för en vecka
+function getAvailableHoursForWeek(month, week) {
+    var workdaysInWeek = getWorkdaysInWeek(month, week);
+    if (workdaysInWeek === 0) return 0; // Om veckan inte finns, returnera 0
 
-        return remainingHours;
-    }
+    var totalHours = workdaysInWeek * 8 * employees.length; // Korrekt beräkning
 
-    // En funktion för att beräkna tillgängliga timmar för en vecka
-    function getAvailableHoursForWeek(month, week) {
-        // Hämta antalet arbetsdagar för den valda veckan
-        var workdaysInWeek = getWorkdaysInWeek(month, week);
+    return totalHours; // Returnera endast tillgängliga timmar
+}
 
-        // Beräkna det totala antalet tillgängliga timmar för veckan
-        var availableHours = workdaysInWeek * 8 * employees.length; // Antag att en arbetsdag är 8 timmar
-
-        // Beräkna totala arbetade timmar för veckan
-        var totalHoursWorked = 0;
-        employeesData.forEach(function (employee) {
-            totalHoursWorked += parseFloat(employee.hoursWorked);
-        });
-
-        // Beräkna antalet timmar kvar eller överstigit
-        var remainingHours = availableHours - totalHoursWorked;
-
-        return remainingHours;
-    }
 
     // Funktion för att beräkna beläggning
     function calculateBelaggning(hoursWorked, totalHours) {
