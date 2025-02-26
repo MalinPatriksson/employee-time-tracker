@@ -1,5 +1,6 @@
 $(document).ready(function () {
     var employeesData = [];
+    var employees = ["Christian Green", "Christer Klingberg", "Ellinor Engström", "Mikael Lundén", "Jenny Dolderer", "Per Renntun", "Jonathan Tinworth"];
 
     // Här fyller du dropdownen för tidsperiod med alternativ
     var intervalDropdown = $('#intervalDropdown');
@@ -89,13 +90,41 @@ var monthsWithWeeks = [
         }
     });
 
-    // Definiera en array med anställda
-    var employees = ["Christian Green", "Christer Klingberg", "Ellinor Engström", "Mikael Lundén", "Jenny Dolderer", "Per Renntun", "Jonathan Tinworth"];
-
     // Loopa genom arrayen och lägg till varje anställd till dropdown-menyn
     var employeeDropdown = $('#employee');
     $.each(employees, function (index, employee) {
         employeeDropdown.append($('<option>').text(employee));
+    });
+
+        // Funktion för att uppdatera dropdown-menyer med anställda
+    function updateEmployeeDropdowns() {
+        var employeeDropdown = $('#employee');
+        var removeEmployeeDropdown = $('#removeEmployee');
+        employeeDropdown.empty();
+        removeEmployeeDropdown.empty();
+        $.each(employees, function (index, employee) {
+            employeeDropdown.append($('<option>').text(employee));
+            removeEmployeeDropdown.append($('<option>').text(employee).val(employee));
+        });
+    }
+
+    updateEmployeeDropdowns();
+
+    // Lägg till ny anställd
+    $('#addEmployee').click(function () {
+        var newEmployee = $('#newEmployee').val().trim();
+        if (newEmployee !== "" && !employees.includes(newEmployee)) {
+            employees.push(newEmployee);
+            updateEmployeeDropdowns();
+            $('#newEmployee').val(''); // Rensa inputfältet
+        }
+    });
+
+    // Ta bort anställd
+    $('#deleteEmployee').click(function () {
+        var employeeToRemove = $('#removeEmployee').val();
+        employees = employees.filter(e => e !== employeeToRemove);
+        updateEmployeeDropdowns();
     });
 
     // När en vecka väljs, beräkna beläggningen för den valda veckan
