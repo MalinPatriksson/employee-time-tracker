@@ -234,9 +234,10 @@ $('#showSummary').click(function () {
         var totalSummaryHTML = '<h3>Totalt</h3>';
         totalSummaryHTML += '<p><strong>Timmar arbetade:</strong> ' + totalHoursWorked + '</p>';
         totalSummaryHTML += '<p><strong>Genomsnittlig beläggning:</strong> ' + avgBelaggning + '%</p>';
-        totalSummaryHTML += '<p><strong>Tillgängliga timmar:</strong> ' + availableHours + '</p>';
+        totalSummaryHTML += '<p><strong>Tillgängliga timmar:</strong> ' + remainingHours + '</p>';
 
-        $('#totalSummary').html(totalSummaryHTML);
+    $('#totalSummary').html(totalSummaryHTML).fadeIn(); // Visa total sammanställning
+        
     } else if (selectedInterval === 'week') {
         // Sammanställning för veckan
         var totalHoursInWeek = getTotalHoursForWeek(selectedMonth, selectedWeek);
