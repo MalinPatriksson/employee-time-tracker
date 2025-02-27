@@ -225,19 +225,19 @@ $('#showSummary').click(function () {
             totalBelaggning += parseFloat(employee.belaggning);
         });
 
-        // Beräkna genomsnittlig beläggning och kvarvarande timmar
+        // Hämta tillgängliga timmar enligt Excel-logiken
         let availableHours = getAvailableHoursForMonth(selectedMonth);
-        let avgBelaggning = employeeCount > 0 ? (totalBelaggning / employeeCount).toFixed(2) : 0;
         let remainingHours = availableHours - totalHoursWorked;
+        let avgBelaggning = employeeCount > 0 ? (totalBelaggning / employeeCount).toFixed(2) : 0;
 
-        // Lägg till total sammanställning
+        // Uppdatera total sammanställning
         var totalSummaryHTML = '<h3>Totalt</h3>';
-        totalSummaryHTML += '<p><strong>Timmar arbetade:</strong> ' + totalHoursWorked + '</p>';
+        totalSummaryHTML += '<p><strong>Totalt arbetade timmar:</strong> ' + totalHoursWorked + '</p>';
         totalSummaryHTML += '<p><strong>Genomsnittlig beläggning:</strong> ' + avgBelaggning + '%</p>';
         totalSummaryHTML += '<p><strong>Tillgängliga timmar:</strong> ' + remainingHours + '</p>';
 
         $('#totalSummary').html(totalSummaryHTML).fadeIn();
-        
+
     } else if (selectedInterval === 'week') {
         // Sammanställning för veckan
         var totalHoursInWeek = getTotalHoursForWeek(selectedMonth, selectedWeek);
@@ -251,14 +251,15 @@ $('#showSummary').click(function () {
             totalHoursWorked += parseFloat(employee.hoursWorked);
         });
 
-        let remainingHoursWeek = totalHoursInWeek - totalHoursWorked;
-        let avgBelaggningWeek = employeeCount > 0 ? (totalHoursWorked / totalHoursInWeek * 100).toFixed(2) : 0;
+        let availableHours = getAvailableHoursForWeek(selectedMonth, selectedWeek);
+        let remainingHoursWeek = availableHours - totalHoursWorked;
+        let avgBelaggningWeek = employeeCount > 0 ? (totalHoursWorked / availableHours * 100).toFixed(2) : 0;
 
-        // Lägg till total sammanställning för veckan
+        // Uppdatera total sammanställning för veckan
         var totalSummaryHTML = '<h3>Totalt</h3>';
         totalSummaryHTML += '<p><strong>Totalt arbetade timmar:</strong> ' + totalHoursWorked + '</p>';
         totalSummaryHTML += '<p><strong>Genomsnittlig beläggning:</strong> ' + avgBelaggningWeek + '%</p>';
-        totalSummaryHTML += '<p><strong>Kvarvarande timmar:</strong> ' + remainingHoursWeek + '</p>';
+        totalSummaryHTML += '<p><strong>Tillgängliga timmar:</strong> ' + remainingHoursWeek + '</p>';
 
         $('#totalSummary').html(totalSummaryHTML).fadeIn();
     }
@@ -267,6 +268,7 @@ $('#showSummary').click(function () {
     $('#summary').html(summaryHTML);
     $('#downloadExcel').show();
 });
+
 
 
     $('#downloadExcel').click(async function () {
