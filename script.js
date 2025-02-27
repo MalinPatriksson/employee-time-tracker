@@ -438,7 +438,7 @@ function getDaysInMonth(month) {
         $('#employeeFormGroup').hide();
         $('#hoursWorked').val('');
         $('#summary').empty();
-        $('#totalSummary').empty();
+        $('#totalSummary').empty().hide();
         $('#confirmationMessage').hide(); // Dölj bekräftelsemeddelandet
         $('#downloadExcel').hide();
         $('#monthFormGroup').hide(); // Dölj månadsdropdownen
