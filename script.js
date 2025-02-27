@@ -271,68 +271,74 @@ $('#showSummary').click(function () {
 
 
 
-    $('#downloadExcel').click(async function () {
-        var month = $('#month').val(); // Hämta den valda månaden
-        var selectedInterval = $('#intervalDropdown').val(); // Hämta den valda tidsperioden (månad eller vecka)
-        var fileName;
+$('#downloadExcel').click(async function () {
+    var month = $('#month').val(); // Hämta den valda månaden
+    var selectedInterval = $('#intervalDropdown').val(); // Hämta den valda tidsperioden (månad eller vecka)
+    var fileName;
 
-        // Skapa en ny arbetsbok
-        var workbook = await XlsxPopulate.fromBlankAsync();
+    // Skapa en ny arbetsbok
+    var workbook = await XlsxPopulate.fromBlankAsync();
+    const sheet = workbook.sheet(0);
 
-        const sheet = workbook.sheet(0);
-
-        // Beräkna totala arbetade timmar och beläggningens procentandel för alla anställda
-        var totalHoursWorked = 0;
-        var totalBelaggning = 0;
-        employeesData.forEach(function (employee) {
-            totalHoursWorked += parseFloat(employee.hoursWorked);
-            totalBelaggning += parseFloat(employee.belaggning);
-        });
-
-        // Lägg till rubriker för data i Excel-filen och formatera dem som fetstil
-        sheet.cell("A1").value("Anställd").style({ bold: true });
-        sheet.cell("B1").value("Timmar arbetade").style({ bold: true });
-        sheet.cell("C1").value("Beläggning (%)").style({ bold: true });
-
-        // Lägg till data för varje anställd i Excel-filen och formatera timmar arbetade som tal
-        employeesData.forEach(function (employee, index) {
-            sheet.cell(`A${index + 2}`).value(employee.name);
-            sheet.cell(`B${index + 2}`).value(parseFloat(employee.hoursWorked)); // Konvertera till tal för att undvika textformat
-            sheet.cell(`C${index + 2}`).value(employee.belaggning.toFixed(2));
-        });
-
-        // Lägg till totala värden för alla anställda i Excel-filen och formatera dem som fetstil
-        var totalRow = employeesData.length + 2; // Anta att den totala raden är efter den sista anställdas rad
-        sheet.cell(`A${totalRow}`).value("Totalt").style({ bold: true });
-        sheet.cell(`B${totalRow}`).value(totalHoursWorked).style({ bold: true });
-        sheet.cell(`C${totalRow}`).value((totalBelaggning / employeesData.length).toFixed(2)).style({ bold: true }); // Genomsnittlig beläggning för alla anställda
-
-        // Beräkna antalet tillgängliga timmar för antingen månaden eller den valda veckan
-        var availableHours;
-        if (selectedInterval === "month") {
-            availableHours = getAvailableHoursForMonth(month);
-            fileName = 'sammanställning - ' + month + '.xlsx';
-        } else if (selectedInterval === "week") {
-            var selectedWeek = $('#week').val(); // Hämta den valda veckan
-            availableHours = getAvailableHoursForWeek(month, selectedWeek);
-            fileName = 'sammanställning - ' + month + ', vecka ' + selectedWeek + '.xlsx';
-        }
-
-        // Visa antalet tillgängliga timmar i Excel-filen för månaden eller den valda veckan
-        sheet.cell(`A${totalRow + 1}`).value("Tillgängliga timmar").style({ bold: true });
-        sheet.cell(`B${totalRow + 1}`).value(availableHours).style({ bold: true });
-
-        // Skapa en data-URL från arbetsboken
-        var dataURL = await workbook.outputAsync();
-
-        // Skapa en länk för att ladda ner filen med det dynamiska filnamnet
-        var link = document.createElement('a');
-        link.href = window.URL.createObjectURL(new Blob([dataURL], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
-        link.download = fileName; // Använd det dynamiska filnamnet
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    // Beräkna totala arbetade timmar och beläggningens procentandel för alla anställda
+    var totalHoursWorked = 0;
+    var totalBelaggning = 0;
+    employeesData.forEach(function (employee) {
+        totalHoursWorked += parseFloat(employee.hoursWorked);
+        totalBelaggning += parseFloat(employee.belaggning);
     });
+
+    // Lägg till rubriker för data i Excel-filen och formatera dem som fetstil
+    sheet.cell("A1").value("Anställd").style({ bold: true });
+    sheet.cell("B1").value("Timmar arbetade").style({ bold: true });
+    sheet.cell("C1").value("Beläggning (%)").style({ bold: true });
+
+    // Lägg till data för varje anställd i Excel-filen och formatera timmar arbetade som tal
+    employeesData.forEach(function (employee, index) {
+        sheet.cell(`A${index + 2}`).value(employee.name);
+        sheet.cell(`B${index + 2}`).value(parseFloat(employee.hoursWorked)); // Konvertera till tal för att undvika textformat
+        sheet.cell(`C${index + 2}`).value(employee.belaggning.toFixed(2));
+    });
+
+    // Lägg till totala värden för alla anställda i Excel-filen och formatera dem som fetstil
+    var totalRow = employeesData.length + 2; // Anta att den totala raden är efter den sista anställdas rad
+    sheet.cell(`A${totalRow}`).value("Totalt").style({ bold: true });
+    sheet.cell(`B${totalRow}`).value(totalHoursWorked).style({ bold: true });
+    sheet.cell(`C${totalRow}`).value((totalBelaggning / employeesData.length).toFixed(2)).style({ bold: true }); // Genomsnittlig beläggning för alla anställda
+
+    // *** Dynamisk beräkning av tillgängliga timmar beroende på antalet anställda ***
+    var availableHours;
+    var currentEmployees = employees.length; // Räknar hur många anställda som är aktiva
+
+    if (selectedInterval === "month") {
+        availableHours = getAvailableHoursForMonth(month, currentEmployees); // Skicka antal anställda
+        fileName = 'sammanställning - ' + month + '.xlsx';
+    } else if (selectedInterval === "week") {
+        var selectedWeek = $('#week').val(); // Hämta den valda veckan
+        availableHours = getAvailableHoursForWeek(month, selectedWeek, currentEmployees); // Skicka antal anställda
+        fileName = 'sammanställning - ' + month + ', vecka ' + selectedWeek + '.xlsx';
+    }
+
+    // Räkna ut kvarvarande timmar
+    var remainingHours = availableHours - totalHoursWorked;
+    if (remainingHours < 0) remainingHours = 0; // För säkerhet
+
+    // Visa antalet tillgängliga timmar i Excel-filen för månaden eller den valda veckan
+    sheet.cell(`A${totalRow + 1}`).value("Tillgängliga timmar").style({ bold: true });
+    sheet.cell(`B${totalRow + 1}`).value(remainingHours).style({ bold: true });
+
+    // Skapa en data-URL från arbetsboken
+    var dataURL = await workbook.outputAsync();
+
+    // Skapa en länk för att ladda ner filen med det dynamiska filnamnet
+    var link = document.createElement('a');
+    link.href = window.URL.createObjectURL(new Blob([dataURL], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+    link.download = fileName; // Använd det dynamiska filnamnet
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
+
 
     function calculateOccupancyForWeek(selectedMonth, selectedWeek) {
         var selectedMonthData = monthsWithWeeks.find(month => month.name === selectedMonth);
